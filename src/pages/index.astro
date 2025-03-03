@@ -1,0 +1,81 @@
+---
+import Layout from "../layouts/Layout.astro";
+
+import { wpquery } from "@services/wordpress";
+
+const cardsData = await wpquery({
+  query: `
+        query getPostCards {
+            posts {
+                nodes {
+                title
+                slug
+                featuredImage {
+                    node {
+                    altText
+                    mediaItemUrl
+                    srcSet(size: MEDIUM)
+                    sizes(size: LARGE)
+                    altText
+                    link
+                    sourceUrl(size: LARGE)
+                    }
+                }
+                author {
+                    node {
+                    avatar {
+                        url
+                    }
+                    firstName
+                    lastName
+                    name
+                    slug
+                    }
+                }
+                date
+                excerpt
+                categories {
+                    nodes {
+                    name
+                    slug
+                    parent {
+                        node {
+                        name
+                        slug
+                        id
+                        }
+                    }
+                    id
+                    uri
+                    }
+                }
+                isSticky
+                seo {
+                    metaDesc
+                }
+                }
+            }
+            comments {
+                edges {
+                node {
+                    id
+                }
+                }
+            }
+            }
+    `,
+});
+
+console.log(cardsData.posts.nodes.title);
+
+const posts = cardsData.posts.nodes;
+---
+
+<Layout>
+    {
+        posts.map((post) => (
+            <h1>{post.title}</h1>
+        ))
+    }
+
+</Layout>
