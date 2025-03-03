@@ -33,7 +33,7 @@ const cardsData = await wpquery({
                     }
                 }
                 date
-                excerpt
+                excerpt(format: RENDERED)
                 categories {
                     nodes {
                     name
@@ -66,16 +66,49 @@ const cardsData = await wpquery({
     `,
 });
 
-console.log(cardsData.posts.nodes.title);
-
 const posts = cardsData.posts.nodes;
+
+import formatedDate from "@utils/formatedDate";
 ---
 
 <Layout>
-    {
-        posts.map((post) => (
-            <h1>{post.title}</h1>
-        ))
-    }
+  <main
+    class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 flex flex-col items-center justify-center h-full w-full mt-10 min-h-[100dvh]"
+  >
+    <section class="grid grid-cols-1 gap-8 md:grid-cols-3 min-h-[100dvh] md:min-h-0">
+      {
+        posts.map((post: any) => (
+          <article class="overflow-hidden rounded-lg shadow-sm transition hover:shadow-lg min-h-[30rem] md:min-h-0">
+            <img
+              alt={post.featuredImage.node.altText}
+              src={post.featuredImage.node.sourceUrl}
+              class="h-56 w-full object-cover"
+            />
 
+            <div class="bg-white p-4 sm:p-6">
+              <div class="flex items-center justify-start mb-5 gap-2">
+                <img
+                  src={post.author.node.avatar.url}
+                  alt={post.author.node.name}
+                  class="h-10 w-10 rounded-full"
+                />
+                <h4>{post.author.node.name}</h4>
+              </div>
+              <time datetime={post.date} class="block text-xs text-gray-500">
+                {formatedDate(post.date)}
+              </time>
+
+              <a href={`/post/${post.slug}`}>
+                <h3 class="mt-0.5 text-lg text-gray-900">{post.title}</h3>
+              </a>
+
+              <div class="mt-2 line-clamp-3 text-sm/relaxed text-gray-500">
+                <Fragment set:html={post.excerpt.replace(/\[.*?\]/g, "...")} />
+              </div>
+            </div>
+          </article>
+        ))
+      }
+    </section>
+  </main>
 </Layout>
